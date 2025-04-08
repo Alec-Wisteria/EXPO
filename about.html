@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>About Us - BodyChecK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5, #ddcaca);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: linear-gradient(180deg, #f5eeee, #e5d7d7);
+    padding: 20px;
+    transition: left 0.4s ease-in-out; 
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 1000;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.toggle-btn {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    background-color: #606060;
+    color: white;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 18px;
+    transition: left 0.4s; 
+    z-index: 1100;
+}
+        .sidebar img {
+            width: 120px;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar a {
+            display: block;
+            padding: 12px;
+            color: black;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 5px 0;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #FF5E78;
+            transform: scale(1.05);
+        }
+        .about-container {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 85%;
+            max-width: 700px;
+            margin-bottom: 250px;
+        }
+        .about-container h2 {
+            color: black;
+            font-size: 2.2em;
+        }
+        .about-container p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+        }
+        .footer {
+            background: rgb(126, 31, 31);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .logo {
+            width: 150px;  
+            display: block;
+            margin: 10px auto; 
+            border-radius: 10px; 
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="sidebar" id="sidebar">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+        <a href="index.html">Home</a>
+        <a href="profile.html">Profile</a>
+        <a href="#history">BMI History</a>
+        <a href="about.html">About Us</a>
+    </div>
+    <div class="about-container">
+        <h2>About Us</h2>
+        <p>BodyChecK was developed to encourage health awareness and help individuals easily track their BMI. We aim to provide a seamless and interactive experience, offering personalized insights for healthier living.</p>
+        <h3>Meet the Team</h3>
+            <p><strong>Project Manager:</strong> Cindy Angeline Aludo</p>
+            <p><strong>Lead UI/UX Designers:</strong> David Zacharias Arambulo, Erron John Adobas</p>
+            <p><strong>Backend & Functional Developer:</strong> Alexander James Purcia</p>
+    </div>
+    <div class="footer">
+        <p>📞 +639738162567 | 📧 BodyCheck@gmail.com</p>
+    </div>
+    <script>
+        function toggleSidebar() {
+    let sidebar = document.getElementById("sidebar");
+    let toggleBtn = document.querySelector(".toggle-btn");
+
+    sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+        toggleBtn.style.left = "260px";  
+    } else {
+        toggleBtn.style.left = "10px";  
+    }
+}
+
+
+    </script>
+</body>
+</html>

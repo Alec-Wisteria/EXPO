@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,800" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6f5f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .profile-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            position: relative;
+            padding: 40px;
+            text-align: center;
+            width: 400px;
+        }
+
+        h1 {
+            font-weight: bold;
+            margin: 0 0 20px;
+        }
+
+        p {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        button {
+            border-radius: 20px;
+            border: 1px solid #F2eee3;
+            background-color: #F2eee3;
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #e7d4c5;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Welcome, <span id="username"></span></h1>
+        <p>Email: <span id="email"></span></p>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        async function loadProfile() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "login.html"; // Redirect to login if not logged in
+                return;
+            }
+
+            const response = await fetch("http://localhost:3000/profile", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            const data = await response.json();
+            if (data.error) {
+                alert(data.error);
+                localStorage.removeItem("token");
+                window.location.href = "index.html";
+            } else {
+                document.getElementById("username").innerText = data.name;
+                document.getElementById("email").innerText = data.email;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
