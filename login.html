@@ -222,7 +222,7 @@ input {
 	transform: translateX(20%);
 }
 
-.social-container {
+social-container {
 	margin: 20px 0;
 }
 
@@ -286,55 +286,99 @@ input {
 	</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
+    // Initialize Supabase client
+	const supabase = supabase.createClient(
+    "https://etyxturvngnbehhtoooa.supabase.co", // Your Supabase URL
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eXh0dXJ2bmduYmVoaHRvb29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxMjYzNjQsImV4cCI6MjA1OTcwMjM2NH0.Th0CQNaDeBvCWhbtXSf7sUfMAmCMhplETLNls7mfmF4" // Replace with your Supabase anon key
+);
+
     const signUpButton = document.getElementById('signUp');
-const signInButton = document.getElementById('signIn');
-const container = document.getElementById('container');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
 
-signUpButton.addEventListener('click', () => {
-	container.classList.add("right-panel-active");
-});
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
 
-signInButton.addEventListener('click', () => {
-	container.classList.remove("right-panel-active");
-});
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
 
-async function signUp() {
+	async function signUp() {
     const name = document.querySelector('.sign-up-container input[placeholder="Name"]').value;
     const email = document.querySelector('.sign-up-container input[placeholder="Email"]').value;
     const password = document.querySelector('.sign-up-container input[placeholder="Password"]').value;
 
-    const response = await fetch("http://localhost:3000/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password })
+    console.log("Name:", name);
+    console.log("Email:", email);
+    console.log("Password:", password);
+
+    if (!name || !email || !password) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    // Email validation
+    if (!email.includes('@')) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    // Password length check (minimum 5 characters)
+    if (password.length < 5) {
+        alert("Password must be at least 5 characters long.");
+        return;
+    }
+
+    const { user, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: { name }
+        }
     });
 
-    const data = await response.json();
-    alert(data.message);
-    container.classList.remove("right-panel-active");
-}
-
-async function signIn() {
-    const email = document.querySelector('.sign-in-container input[placeholder="Email"]').value;
-    const password = document.querySelector('.sign-in-container input[placeholder="Password"]').value;
-
-    const response = await fetch("http://localhost:3000/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-    });
-
-    const data = await response.json();
-    if (data.token) {
-        localStorage.setItem("token", data.token);
-        alert("Login Successful!");
-        window.location.href = "index.html"; 
+    if (error) {
+        console.error("Error:", error);
+        alert("Error: " + error.message);
     } else {
-        alert(data.error);
+        // Insert the user profile data into the profiles table
+        const { error: insertError } = await supabase
+            .from('profiles')
+            .insert([
+                { id: user.id, name: name } // Save name to profiles table using the Supabase user id
+            ]);
+
+        if (insertError) {
+            console.error("Error inserting profile:", insertError);
+            alert("Error saving profile information.");
+        } else {
+            console.log("Profile data saved.");
+            alert("User registered and profile saved successfully!");
+            container.classList.remove("right-panel-active");
+        }
     }
 }
 
+    async function signIn() {
+        const email = document.querySelector('.sign-in-container input[placeholder="Email"]').value;
+        const password = document.querySelector('.sign-in-container input[placeholder="Password"]').value;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            alert(error.message);
+        } else {
+            localStorage.setItem("token", data.session.access_token);
+            alert("Login Successful!");
+            window.location.href = "index.html";
+        }
+    }
 </script>
 </body>
 
