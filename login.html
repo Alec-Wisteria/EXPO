@@ -3,10 +3,11 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
-	<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
 </head>
 <style>
     @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
@@ -66,6 +67,7 @@ button {
 	text-transform: uppercase;
 	transition: transform 80ms ease-in;
 	border-color: red;
+	cursor: pointer;
 }
 
 button:active {
@@ -98,6 +100,7 @@ input {
 	padding: 12px 15px;
 	margin: 8px 0;
 	width: 100%;
+	border-radius: 5px;
 }
 
 .container {
@@ -222,7 +225,7 @@ input {
 	transform: translateX(20%);
 }
 
-social-container {
+.social-container {
 	margin: 20px 0;
 }
 
@@ -237,6 +240,37 @@ social-container {
 	width: 40px;
 	background: #f2eee3;
 }
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        min-height: 600px;
+    }
+    
+    .form-container {
+        width: 100%;
+    }
+    
+    .sign-in-container {
+        transform: translateX(0);
+    }
+    
+    .container.right-panel-active .sign-in-container {
+        transform: translateX(100%);
+    }
+    
+    .sign-up-container {
+        transform: translateX(100%);
+    }
+    
+    .container.right-panel-active .sign-up-container {
+        transform: translateX(0);
+    }
+    
+    .overlay-container {
+        display: none;
+    }
+}
 </style>
 <body>
 <div class="container" id="container">
@@ -249,9 +283,9 @@ social-container {
 				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
 			</div>
 			<span>or use your email for registration</span>
-			<input type="text" placeholder="Name" />
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			<input type="text" placeholder="Name" required />
+			<input type="email" placeholder="Email" required />
+			<input type="password" placeholder="Password" required minlength="5" />
 			<button type="button" onclick="signUp()">Sign Up</button>
 		</form>
 	</div>
@@ -264,8 +298,8 @@ social-container {
 				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
 			</div>
 			<span>or use your account</span>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			<input type="email" placeholder="Email" required />
+			<input type="password" placeholder="Password" required />
 			<a href="#">Forgot your password?</a>
 			<button type="button" onclick="signIn()">Sign In</button>
 		</form>
@@ -286,18 +320,19 @@ social-container {
 	</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     // Initialize Supabase client
-	const supabase = supabase.createClient(
-    "https://etyxturvngnbehhtoooa.supabase.co", // Your Supabase URL
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eXh0dXJ2bmduYmVoaHRvb29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxMjYzNjQsImV4cCI6MjA1OTcwMjM2NH0.Th0CQNaDeBvCWhbtXSf7sUfMAmCMhplETLNls7mfmF4" // Replace with your Supabase anon key
-);
+    const supabaseUrl = "https://etyxturvngnbehhtoooa.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0eXh0dXJ2bmduYmVoaHRvb29hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxMjYzNjQsImV4cCI6MjA1OTcwMjM2NH0.Th0CQNaDeBvCWhbtXSf7sUfMAmCMhplETLNls7mfmF4";
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+    // DOM elements
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
     const container = document.getElementById('container');
 
+    // Event listeners for panel switching
     signUpButton.addEventListener('click', () => {
         container.classList.add("right-panel-active");
     });
@@ -306,80 +341,112 @@ social-container {
         container.classList.remove("right-panel-active");
     });
 
-	async function signUp() {
-    const name = document.querySelector('.sign-up-container input[placeholder="Name"]').value;
-    const email = document.querySelector('.sign-up-container input[placeholder="Email"]').value;
-    const password = document.querySelector('.sign-up-container input[placeholder="Password"]').value;
+    // Sign Up Function - Fixed Version
+    async function signUp() {
+        const name = document.querySelector('.sign-up-container input[placeholder="Name"]').value;
+        const email = document.querySelector('.sign-up-container input[placeholder="Email"]').value;
+        const password = document.querySelector('.sign-up-container input[placeholder="Password"]').value;
 
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    if (!name || !email || !password) {
-        alert("Please fill all fields.");
-        return;
-    }
-
-    // Email validation
-    if (!email.includes('@')) {
-        alert("Please enter a valid email address.");
-        return;
-    }
-
-    // Password length check (minimum 5 characters)
-    if (password.length < 5) {
-        alert("Password must be at least 5 characters long.");
-        return;
-    }
-
-    const { user, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-            data: { name }
+        // Basic validation
+        if (!name || !email || !password) {
+            alert("Please fill all fields.");
+            return;
         }
-    });
 
-    if (error) {
-        console.error("Error:", error);
-        alert("Error: " + error.message);
-    } else {
-        // Insert the user profile data into the profiles table
-        const { error: insertError } = await supabase
-            .from('profiles')
-            .insert([
-                { id: user.id, name: name } // Save name to profiles table using the Supabase user id
-            ]);
+        // Better email validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
 
-        if (insertError) {
-            console.error("Error inserting profile:", insertError);
-            alert("Error saving profile information.");
-        } else {
-            console.log("Profile data saved.");
-            alert("User registered and profile saved successfully!");
-            container.classList.remove("right-panel-active");
+        // Password strength check
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters long.");
+            return;
+        }
+
+        try {
+            // Sign up with Supabase
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        name: name
+                    }
+                }
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            // Check if signup was successful
+            if (data.user) {
+                // Insert into profiles table (if needed)
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert([
+                        { 
+                            id: data.user.id, 
+                            name: name,
+                            email: email
+                        }
+                    ]);
+
+                if (profileError) {
+                    console.error("Profile creation error:", profileError);
+                    // Don't throw error here - auth was successful
+                }
+
+                alert("Sign up successful! Please check your email for verification.");
+                container.classList.remove("right-panel-active");
+                
+                // Clear form
+                document.querySelector('.sign-up-container input[placeholder="Name"]').value = '';
+                document.querySelector('.sign-up-container input[placeholder="Email"]').value = '';
+                document.querySelector('.sign-up-container input[placeholder="Password"]').value = '';
+            } else {
+                throw new Error("User creation failed - no user data returned");
+            }
+        } catch (error) {
+            console.error("Sign up error:", error);
+            alert("Sign up failed: " + error.message);
         }
     }
-}
 
+    // Sign In Function
     async function signIn() {
         const email = document.querySelector('.sign-in-container input[placeholder="Email"]').value;
         const password = document.querySelector('.sign-in-container input[placeholder="Password"]').value;
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
+        if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
+        }
 
-        if (error) {
-            alert(error.message);
-        } else {
-            localStorage.setItem("token", data.session.access_token);
-            alert("Login Successful!");
-            window.location.href = "index.html";
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                throw error;
+            }
+
+            if (data.session) {
+                localStorage.setItem("token", data.session.access_token);
+                alert("Login Successful!");
+                window.location.href = "index.html";
+            } else {
+                throw new Error("No session data returned");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            alert("Login failed: " + error.message);
         }
     }
 </script>
 </body>
-
 </html>
